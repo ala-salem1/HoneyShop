@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>لوحة تحكم صاحب المحل</title>
+  <style>
+    body { font-family: "Tajawal", sans-serif; background-color: #fffaf2; color: #4b3a1f; margin: 0; padding: 20px; }
+    h1 { text-align: center; color: #d4a017; }
+    table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+    th, td { border: 1px solid #d6c3a3; padding: 10px; text-align: center; }
+    th { background-color: #d4a017; color: white; }
+    input, select { padding: 8px; margin: 10px 0; }
+  </style>
+</head>
+<body>
+
+  <h1>لوحة تحكم الطلبات</h1>
+
+  <!-- فلترة حسب نوع العسل -->
+  <label for="filterType">فلترة حسب نوع العسل:</label>
+  <select id="filterType">
+    <option value="">عرض كل الطلبات</option>
+    <option value="عسل السدر">عسل السدر</option>
+    <option value="عسل الزهور">عسل الزهور</option>
+    <option value="عسل الغابة">عسل الغابة</option>
+    <option value="عسل الأكاسيا">عسل الأكاسيا</option>
+  </select>
+
+  <table id="ordersTable">
+    <thead>
+      <tr>
+        <th>رقم الطلب</th>
+        <th>الاسم</th>
+        <th>الهاتف</th>
+        <th>نوع العسل</th>
+        <th>الكمية</th>
+        <th>ملاحظات</th>
+        <th>تاريخ الطلب</th>
+      </tr>
+    </thead>
+    <tbody>
+      <!-- البيانات سيتم ملؤها هنا بواسطة JavaScript -->
+    </tbody>
+  </table>
+
+  <script>
+    const ordersTableBody = document.querySelector("#ordersTable tbody");
+    const filterType = document.getElementById("filterType");
+
+    // دالة لجلب الطلبات
+    function fetchOrders() {
+      fetch('http://localhost:3000/orders')
+        .then(res => res.json())
+        .then(data => {
+          displayOrders(data);
+        })
+        .catch(err => {
+          alert('حدث خطأ أثناء جلب البيانات');
+          console.error(err);
+        });
+    }
+
+    // دالة عرض الطلبات في الجدول
+    function displayOrders(orders) {
+      const filterValue = filterType.value;
+      ordersTableBody.innerHTML = "";
+
+      orders.forEach(order => {
+        if(filterValue === "" || order.ProductName === filterValue){
+          const row = document.createElement("tr");
+          row.innerHTML = `
+            <td>${order.OrderID}</td>
+            <td>${order.CustomerName}</td>
+            <td>${order.PhoneNumber}</td>
+            <td>${order.ProductName}</td>
+            <td>${order.Quantity}</td>
+            <td>${order.Address}</td>
+            <td>${new Date(order.OrderDate).toLocaleString()}</td>
+          `;
+          ordersTableBody.appendChild(row);
+        }
+      });
+    }
+
+    // حدث تغيير الفلترة
+    filterType.addEventListener("change", fetchOrders);
+
+    // جلب البيانات عند فتح الصفحة
+    fetchOrders();
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>نموذج حجز عسل طبيعي</title>
+  <style>
+    body {
+      font-family: "Tajawal", sans-serif;
+      background-color: #fffaf2;
+      color: #4b3a1f;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    header {
+      background-color: #d4a017;
+      color: white;
+      width: 100%;
+      text-align: center;
+      padding: 15px 0;
+      font-size: 1.5em;
+      font-weight: bold;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+
+    form {
+      background-color: white;
+      padding: 25px;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      margin-top: 30px;
+      width: 90%;
+      max-width: 500px;
+    }
+
+    label {
+      display: block;
+      margin: 10px 0 5px;
+      font-weight: bold;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #d6c3a3;
+      border-radius: 8px;
+      box-sizing: border-box;
+      font-size: 1em;
+      background-color: #fff9ef;
+    }
+
+    button {
+      background-color: #d4a017;
+      color: white;
+      border: none;
+      padding: 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 1.1em;
+      margin-top: 15px;
+      width: 100%;
+      transition: background 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #b78c14;
+    }
+
+    .success-message {
+      display: none;
+      color: green;
+      margin-top: 15px;
+      text-align: center;
+      font-weight: bold;
+    }
+
+    footer {
+      margin-top: auto;
+      background-color: #f7e7c2;
+      width: 100%;
+      text-align: center;
+      padding: 10px;
+      font-size: 0.9em;
+      color: #5e4a2f;
+    }
+  </style>
+</head>
+<body>
+
+  <header>🍯 نموذج حجز عسل طبيعي 🍯</header>
+
+  <form id="bookingForm">
+    <label for="name">الاسم الكامل:</label>
+    <input type="text" id="name" name="name" required>
+
+    <label for="phone">رقم الهاتف:</label>
+    <input type="tel" id="phone" name="phone" required>
+
+    <label for="email">البريد الإلكتروني (اختياري):</label>
+    <input type="email" id="email" name="email">
+
+    <label for="honeyType">نوع العسل:</label>
+    <select id="honeyType" name="honeyType" required>
+      <option value="">اختر نوع العسل</option>
+      <option value="عسل السدر">عسل السدر</option>
+      <option value="عسل الزهور">عسل الزهور</option>
+      <option value="عسل الغابة">عسل الغابة</option>
+      <option value="عسل الأكاسيا">عسل الأكاسيا</option>
+    </select>
+
+    <label for="quantity">الكمية (بالكيلوغرام):</label>
+    <input type="number" id="quantity" name="quantity" min="0.5" step="0.5" required>
+
+    <label for="notes">ملاحظات إضافية:</label>
+    <textarea id="notes" name="notes" rows="3" placeholder="اكتب أي تفاصيل إضافية هنا..."></textarea>
+
+    <button type="submit">إرسال الحجز</button>
+    <div class="success-message" id="successMessage">تم إرسال الحجز بنجاح! 🍯</div>
+  </form>
+
+  <footer>
+    &copy; 2025 محل العسل الطبيعي – جميع الحقوق محفوظة.
+  </footer>
+
+  <script>
+    const form = document.getElementById("bookingForm");
+    const successMessage = document.getElementById("successMessage");
+
+    form.addEventListener("submit", function(e) {
+      e.preventDefault();
+
+      const data = {
+        name: form.name.value,
+        phone: form.phone.value,
+        email: form.email.value,
+        honeyType: form.honeyType.value,
+        quantity: form.quantity.value,
+        notes: form.notes.value
+      };
+
+      // إرسال البيانات للباكند Node.js
+      fetch('http://localhost:3000/add-order', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      })
+      .then(response => response.json())
+      .then(result => {
+        if(result.success) {
+          successMessage.style.display = "block";
+          form.reset();
+          setTimeout(() => { successMessage.style.display = "none"; }, 3000);
+        } else {
+          alert('حدث خطأ أثناء إرسال الحجز');
+        }
+      })
+      .catch(err => {
+        alert('حدث خطأ في الاتصال بالخادم');
+      });
+    });
+  </script>
+
+</body>
+</html>
